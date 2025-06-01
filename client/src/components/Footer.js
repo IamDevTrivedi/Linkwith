@@ -47,8 +47,8 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/analytics" className="hover:text-sky-400 transition duration-300">
-                                    Analytics
+                                <Link to="/dashboard" className="hover:text-sky-400 transition duration-300">
+                                    Dashboard
                                 </Link>
                             </li>
                         </ul>
