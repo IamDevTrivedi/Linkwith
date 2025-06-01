@@ -5,6 +5,10 @@
 
 Linkwith is an advanced URL shortening and analytics platform that transforms long URLs into concise, trackable links. Built with modern web technologies, it provides comprehensive analytics, QR code generation, and detailed insights into link performance, making it an ideal solution for marketing professionals, content creators, and businesses.
 
+## Deployment
+
+The application is deployed and accessible at [Live](https://linkwith.vercel.app)
+
 ## Key Features
 
 ### Authentication & Security
@@ -88,16 +92,14 @@ npm run init
 #### 3. Configure Environment Variables
 
 Create `.env` files for both the client and server by copying the provided example files:
+Copy the example environment files to create your own configuration:
 
-- For the **client**:
-  ```bash
-  cp client/.env.example client/.env
-  ```
-- For the **server**:
-  ```bash
-  cp server/.env.example server/.env
-  ```
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+```
 
+Refer to the `.env.example` files in each platform directory for the required variable names and formats.
 Update the `.env` files with the required variables specific to your platform (e.g., API keys, database URLs, or other credentials). Refer to the documentation or platform for the correct values.
 
 #### 4. Start the Development Server
@@ -116,13 +118,6 @@ Once the servers are running, you can access the application at the following UR
 
 - **Frontend**: `http://localhost:3000`
 - **Backend**: `http://localhost:5000`
-
-> **Tip**: Ensure no other applications are using ports `3000` or `5000`. If you encounter issues, check for port conflicts and update the `.env` files if necessary.
-
-
-## Deployment
-
-The application is deployed and accessible at [linkwith.vercel.app](https://linkwith.vercel.app)
 
 ### Deployment Prerequisites
 

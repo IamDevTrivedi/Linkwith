@@ -30,6 +30,10 @@ app.use('/api/urls', urlRoutes);
 app.use('/api/auth', authRoutes);
 app.use("/api/user", userRoutes);
 
+app.get("/" , (req  , res) => {
+    res.send("Welcome to URL Shortener API") ;
+}) ; 
+
 // Start Server
 app.listen(PORT, () => {
     logger.info(`✅ Server running on port ${PORT}`);
