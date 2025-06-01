@@ -1,0 +1,17 @@
+{
+  "name": "linkwith",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "go": "concurrently \"npm start --prefix ./client\" \"npm start --prefix ./server\"", 
+    "init": "concurrently \"npm i\" \"npm i --prefix ./client\" \"npm i --prefix ./server\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^9.1.0",
+    "three": "^0.171.0"
+  }
+}
