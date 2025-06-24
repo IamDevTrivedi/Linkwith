@@ -79,7 +79,7 @@ const urlController = {
 
             if (urlEntry) {
 
-                updateAnalytics(req, res);
+                await updateAnalytics(req, res);
 
                 return res.status(200).json({
                     redirection: true,

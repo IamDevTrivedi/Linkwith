@@ -39,22 +39,118 @@ function getDeviceType(req) {
     if (detectMobile(userAgent)) return "mobile";
     return "desktop";
 }
+//<!------------------ separator ------------------->
 
-// Fetch the user's country based on their IP address
-async function getCountry() {
-    const ipResponse = await fetch("https://api.ipify.org/?format=json");
-    const ipData = await ipResponse.json();
-    const geoResponse = await fetch(`http://ip-api.com/json/${ipData.ip}`);
-    const geoData = await geoResponse.json();
-    return geoData.country;
+
+
+async function getCountry(req = null) {
+    try {
+        
+        let clientIP = null;
+        
+        if (req && req.headers) {
+            
+            clientIP = req.headers['x-forwarded-for'] ||
+                      req.headers['x-real-ip'] ||
+                      req.headers['x-client-ip'] ||
+                      req.headers['cf-connecting-ip'] ||
+                      req.headers['x-forwarded'] ||
+                      req.headers['forwarded-for'] ||
+                      req.headers['forwarded'];
+            
+            
+            if (clientIP && clientIP.includes(',')) {
+                clientIP = clientIP.split(',')[0].trim();
+            }
+            
+            
+            if (!clientIP) {
+                clientIP = req.connection?.remoteAddress ||
+                          req.socket?.remoteAddress ||
+                          req.ip;
+            }
+        }
+        
+        
+        if (!clientIP || clientIP === '127.0.0.1' || clientIP === '::1' || clientIP.startsWith('10.') || clientIP.startsWith('192.168.') || clientIP.startsWith('172.')) {
+            const ipResponse = await fetch("https://api.ipify.org/?format=json");
+            const ipData = await ipResponse.json();
+            clientIP = ipData.ip;
+        }
+        
+        
+        const geoResponse = await fetch(`http://ip-api.com/json/${clientIP}`);
+        const geoData = await geoResponse.json();
+        return geoData.country;
+    } catch (error) {
+        console.error('Error getting country:', error);
+        try {
+            const ipResponse = await fetch("https://api.ipify.org/?format=json");
+            const ipData = await ipResponse.json();
+            const geoResponse = await fetch(`http://ip-api.com/json/${ipData.ip}`);
+            const geoData = await geoResponse.json();
+            return geoData.country;
+        } catch (fallbackError) {
+            console.error('Fallback method also failed:', fallbackError);
+            return null;
+        }
+    }
 }
 
-// Fetch the user's IP address
-async function getIP() {
-    const ipResponse = await fetch("https://api.ipify.org/?format=json");
-    const ipData = await ipResponse.json();
-    return ipData.ip;
+
+async function getIP(req = null) {
+    try {
+        let clientIP = null;
+        
+        if (req && req.headers) {
+            clientIP = req.headers['x-forwarded-for'] ||
+                      req.headers['x-real-ip'] ||
+                      req.headers['x-client-ip'] ||
+                      req.headers['cf-connecting-ip'] ||
+                      req.headers['x-forwarded'] ||
+                      req.headers['forwarded-for'] ||
+                      req.headers['forwarded'];
+            
+            
+            if (clientIP && clientIP.includes(',')) {
+                clientIP = clientIP.split(',')[0].trim();
+            }
+            
+            
+            if (!clientIP) {
+                clientIP = req.connection?.remoteAddress ||
+                          req.socket?.remoteAddress ||
+                          req.ip;
+            }
+        }
+        
+        
+        if (clientIP && clientIP !== '127.0.0.1' && clientIP !== '::1' && 
+            !clientIP.startsWith('10.') && !clientIP.startsWith('192.168.') && 
+            !clientIP.startsWith('172.')) {
+            return clientIP;
+        }
+        
+        
+        const ipResponse = await fetch("https://api.ipify.org/?format=json");
+        const ipData = await ipResponse.json();
+        return ipData.ip;
+    } catch (error) {
+        console.error('Error getting IP:', error);
+        
+        try {
+            const ipResponse = await fetch("https://api.ipify.org/?format=json");
+            const ipData = await ipResponse.json();
+            return ipData.ip;
+        } catch (fallbackError) {
+            console.error('Fallback method also failed:', fallbackError);
+            return null;
+        }
+    }
 }
+
+
+//<!------------------------------------------------>
 
 // Get today's date in a readable format
 function getToday() {
@@ -65,6 +161,8 @@ function getToday() {
         year: 'numeric',
     });
 }
+
+
 
 // Update analytics for a given short URL
 async function updateAnalytics(req, res) {
@@ -86,7 +184,7 @@ async function updateAnalytics(req, res) {
         urlEntry.clicks.total += 1;
 
         // Check for unique clicks using the user's IP address
-        const IP = await getIP();
+        const IP = await getIP(req);
         const IParray = urlEntry.visitedIP;
         let isUniqueVisitor = !IParray.includes(IP);
 
@@ -108,7 +206,7 @@ async function updateAnalytics(req, res) {
         urlEntry.analytics.devices[device] += 1;
 
         // Update geographical analytics
-        const country = await getCountry();
+        const country = await getCountry(req);
         const geography = urlEntry.analytics.geography;
         let countryEntry = geography.find(entry => entry.country === country);
 
